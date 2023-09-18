@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="shortcut icon" type="image/png" href="img/pill.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>OrdinalsPill</title>
+    <link rel="stylesheet" href="css/styles.1.0.2.css">
+    <script src="js/lib/indexeddb.js"></script>
+    <script src="js/lib/wif.js"></script>
+    <script src="js/lib/buffer.6.0.3.js"></script>
+    <script src="js/lib/buff-utils.1.7.1.js"></script>
+    <script src="js/lib/tapscript.1.2.7.js"></script>
+    <script src="js/lib/crypto-utils.1.5.11.js"></script>
+    <script src="js/lib/bech32.2.0.0.js"></script>
+    <script src="js/lib/qrcode.js"></script>
+</head>
+
+<body>
+
+    <nav>
+        <ul>
+            <li id="logo"><a href="index.html">
+                <img src="img/pill.svg" alt="" style="height: 30px; border-radius: 20px;">
+                Ordinals Pill &gt;&gt;</a></li>
+            <li><a href="index.html">inscribe</a></li>
+
+            <li>|</li>
+        <li><a href="developers.html">Developers</a></li>
+        <!-- <li>|</li>
+        <li><a href="universe.html"></a></li> -->
+
+        </ul>
+    </nav>
+
+    <div class="app-wrapper">
+
+        <h1>Ordinals.Pill</h1>
+        <p>Inscribe to Support a Developer: Check the developer page to see who qualifies for funds.</p>
+        <hr/>
+        <h6 style="margin-top: -15px;">
+            Self-custodial bulk inscriptions. The most powerful and cost-effective way to inscribe Ordinals on Bitcoin.
+            <!-- Join
+            our <a href="https://discord.gg/Ur8XGaurSd" target="_blank">Discord</a>. Make sure to <a
+                href="https://medium.com/@rarity.garden/inscriptions-with-looksordinal-cfa2d635f720"
+                target="_blank">read the guide</a>. -->
+        </h6>
+        <h2 class="safari_warning">This tool may not work in safari browser. If you are using that, consider switching.
+        </h2>
+        <div id="setup">
+
+            <div class="mb-3">
+                <label for="taproot_address">&gt;&gt; Receiving address</label>
+                <input id="taproot_address" class="address" placeholder="Enter a btc address from an ordinals wallet">
+                <div style="font-size: 13px; color: gray;">Taproot addresses are recommended. Use non-taproot addresses
+                    on your own risk.</div>
+            </div>
+
+            <p>&gt;&gt; Please choose what you want to inscribe:</p>
+
+            <div class="options">
+                <div>Main Inscriptions</div>
+                <div style="font-size: 14px; color: gray;">Our Main Most popular &amp; inscriptions</div>
+                <ul>
+                    <li>
+                        <a id="upload_file_nav" class="upload_file active" href="javascript:void(0);">files</a>
+                    </li>
+                    <li>
+                        <a id="text_nav" class="text" href="javascript:void(0);">text</a>
+                    </li>
+                    <li>
+                        <a id="registration_nav" class="registration" href="javascript:void(0);">.sats domains</a>
+                    </li>
+                    <li style="display: none;">
+                        <a id="unisat_nav" class="unisat" href="javascript:void(0);">.unisat domains</a>
+                    </li>
+                    <li>
+                        <a id="brc20_mint_nav" class="brc20_mint" href="javascript:void(0);">brc-20 mint</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="brc20_deploy_nav" class="brc20_deploy" href="javascript:void(0);">brc-20 deploy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="brc20_transfer_nav" class="brc20_transfer" href="javascript:void(0);">brc-20 transfer</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="options" style="display: none;" id="plugin-list">
+                <div>Special</div>
+                <div style="font-size: 14px; color: gray;"><a style="font-size: 14px; color: gray;"
+                        href="https://discord.gg/Ur8XGaurSd" target="_blank">Contact us</a> to list your project here
+                </div>
+                <ul style="vertical-align: top;"></ul>
+            </div>
+
+            <form id="app-form">
+
+                <div class="file_form option_form">
+                    <input accept=".json,
+                            .pdf,
+                            .asc,
+                            .yaml,
+                            .yml,
+                            .flac,
+                            .mp3,
+                            .wav,
+                            .apng,
+                            .avif,
+                            .gif,
+                            .jpg,
+                            .jpeg,
+                            .png,
+                            .svg,
+                            .webp,
+                            .glb,
+                            .stl,
+                            .html,
+                            .txt,
+                            .mp4,
+                            .webm
+                            " type="file" class="form" multiple>
+
+                    <button style="margin-top: 15px;" id="bytes_checker" type="button">
+                        Check if file(s) are inscribed already
+                    </button>
+                </div>
+
+                <div class="text_form option_form">
+
+                    <div id="form_container">
+
+                        <textarea class="text_area" style="width: 100%; height: 75px;"
+                            placeholder="add some text"></textarea>
+
+                    </div>
+
+                    <label for="text-multirow" style="display:inline-block;margin-top:15px;">Multi row</label>
+                    <input
+                        onclick="!this.checked?$('#text-addrow').style.display='none':$('#text-addrow').style.display='inline-block'"
+                        id="text-multirow" style="display: inline-block; height: 0.9rem; width:unset" type="checkbox" />
+
+                    <button style="display: none" id="text-addrow" onclick="addMoreText(); return false;">Add
+                        Row</button>
+
+                    <div style="margin-top: 15px">
+                        <label for="text-repeat">Repeat</label>
+                        <input id="text-repeat" type="text" value="1" placeholder="e.g. 10 to mint ten times" />
+                    </div>
+
+                </div>
+
+                <div class="dns_form option_form">
+                    <p>tip: use the .sats domain feature in the Special section above to host your content</p>
+                    <textarea class="dns" style="width: 100%; height: 250px;"
+                        placeholder="One domain per line. Example:&#10;&#10;ordi.sats&#10;btc.sats"></textarea>
+                    <button class="dns_checker btn btn-outline-primary mt-3 mb-3" type="button">Check
+                        availability</button>
+                </div>
+
+                <div class="unisat_form option_form">
+                    <textarea class="unisat_text" style="width: 100%; height: 250px;"
+                        placeholder="One domain per line. Example:&#10;&#10;ordi.unisat&#10;btc.unisat"></textarea>
+                    <button class="unisat_checker btn btn-outline-primary mt-3 mb-3" type="button">Check
+                        availability</button>
+                </div>
+
+                <div class="brc20_mint_form option_form">
+
+                    <div class="mb-3">
+                        <label for="brc20-mint-ticker">Ticker</label>
+                        <input id="brc20-mint-ticker" type="text" maxlength="4" value="" placeholder="e.g. ordi" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="brc20-mint-amount">Amount</label>
+                        <input id="brc20-mint-amount" type="text" value="" placeholder="e.g. 1000" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="brc20-mint-repeat">Repeat</label>
+                        <input id="brc20-mint-repeat" type="text" value="1" placeholder="e.g. 10 to mint ten times" />
+                    </div>
+
+                </div>
+
+                <div class="brc20_deploy_form option_form">
+
+                    <div class="mb-3">
+                        <label for="brc20-deploy-ticker">Ticker</label>
+                        <input id="brc20-deploy-ticker" type="text" maxlength="4" value="" placeholder="e.g. ordi" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="brc20-deploy-max">Supply</label>
+                        <input id="brc20-deploy-max" type="text" value="" placeholder="e.g. 21000000" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="brc20-deploy-lim">Limit per mint</label>
+                        <input id="brc20-deploy-lim" type="text" value="" placeholder="e.g. 1000" />
+                    </div>
+
+                </div>
+
+                <div class="brc20_transfer_form option_form">
+
+                    <hr />
+
+                    <p>
+                        HOWTO:
+                    </p>
+
+                    <p>
+                        1. To send tokens to someone, you need to have enough transferable balance registered first.
+                        Only
+                        then
+                        you may perform the actual transfer with another inscription. To add tokens to your transferable
+                        balance, use an address of yours that previously minted enough tokens in "Receiving address"
+                        above.
+                    </p>
+
+                    <p>
+                        2. You can check your transferable balance using <a id="transfer-balance-link"
+                            href="https://unisat.io/brc20?q=" target="_blank">this
+                            link</a>.
+                    </p>
+
+                    <p>
+                        3. If your transferable balance is sufficient, you can skip step 1. and use the actual token
+                        recipient
+                        address in "Receiving address" above.
+                    </p>
+
+                    <p>
+                        WARNING:<br />
+                        To register your balance, the "Receiving address" above must be an address of yours that
+                        originally
+                        minted the token.
+                        If you are mixing this up or use the wrong address, risk is that the transfer will be invalid or
+                        being
+                        sent to the wrong recipient. This tool is not responsible for any of your decisions.
+                    </p>
+
+                    <hr />
+
+                    <div id="brc-transfer-container">
+
+                        <div class="brc-transfer-block">
+
+                            <div class="mb-3">
+                                <label>Ticker</label>
+                                <input class="brc20-transfer-ticker" type="text" maxlength="4" value=""
+                                    placeholder="e.g. ordi" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Amount</label>
+                                <input class="brc20-transfer-amount" type="text" value="" placeholder="e.g. 21000000" />
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <button id="add_transfer_button">Add Transfer</button>
+
+                </div>
+
+                <div id="plugin_form" class="option_form" style="display: none;"></div>
+
+                <span class="timer">61</span>
+
+                <p>&gt;&gt; Select a feerate (sats/vB)</p>
+                <div class="feerates">
+                    <div class="fee minfee">
+                        <div style="color: white;" class="num rounded">...</div>
+                        <div class="name">Min</div>
+                    </div>
+                    <div class="fee midfee">
+                        <div style="color: white;" class="num rounded">...</div>
+                        <div class="name">Mid</div>
+                    </div>
+                    <div class="fee maxfee">
+                        <div style="color: white;" class="num rounded">...</div>
+                        <div class="name">Max</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;" id="sliderange">
+                    <label for="sats_range">sats/vB: <span id="sats_per_byte">1</span></label>
+                    <input class="form-range" id="sats_range" type="range" min="1" max="1000" value="1">
+                </div>
+            </form>
+
+            <hr />
+
+            <div><label><span style="margin-right: 10px;">🔧</span> Options</label></div>
+
+            <div>
+                <label style="display: inline-block" for="padding"><span
+                        style="margin-left: 10px; margin-right: 16px;">₿</span>
+                    Sats in inscription (padding)</label>
+                <input style="width: 20%" id="padding" type="text" value="" />
+            </div>
+
+            <div>
+                <label style="display: inline-block;" for="cursed"><span style="margin-right: 6px;">🧚🏻</span> Cursed
+                    Inscriptions </label>
+                <input style="display: inline-block; height: 0.9rem; width:unset" id="cursed" type="checkbox"
+                    value="1" />
+            </div>
+
+            <div>
+                <label style="display: inline-block;" for="cpfp"><span style="margin-right: 6px;">🚀</span> Enable
+                    CPFP</label>
+                <input style="display: inline-block; height: 0.9rem; width:unset" id="cpfp" type="checkbox" value="1"
+                    checked="checked" />
+            </div>
+
+            <div>
+                <label style="display: inline-block;" for="turbo"><span style="margin-right: 6px;">🔥</span> Enable
+                    Turbo</label>
+                <input style="display: inline-block; height: 0.9rem; width:unset" id="turbo" type="checkbox"
+                    value="1" />
+            </div>
+
+            <div id="backup" style="margin-top: 0px; margin-bottom: 10px;">
+                <div><span style="margin-right: 6px;">🚑</span> <a id="backup-usage" href="javascript:void(0);">Backup
+                        Usage</a>
+                    <span id="db-quota"></span>
+                </div>
+                <div id="backup-recovery"
+                    style="border: 1px solid white; padding: 10px; display:none; margin-top: 15px; margin-bottom: 15px; max-height: 500px; overflow-x: auto">
+                </div>
+                <div id="backup-list" style="display:none; margin-top: 15px; max-height: 500px; overflow-x: auto"></div>
+            </div>
+
+            <div id="tipping" style="display: inline-block;">
+                <label for="tip" style="display: inline-block;margin-bottom: 0"><span
+                        style="margin-right: 6px;">💖</span>
+                    Developer Tip</label>
+                <input id="tip" style="width: 100px; margin-bottom:0;" type="text" value="0" /> sats ($<span
+                    id="tip-usd">0</span>)
+            </div>
+            <h4>All developer tips are being used to support dedicated developers who are working to buidl the Ordinals ecosystem.</h4>
+
+            <hr />
+
+        </div>
+
+        <div style="margin-top: 20px; margin-bottom: 20px;">
+            <button class="submit btn btn-primary">Inscribe!</button>
+            <button class="estimate btn btn-primary">Estimate Fees</button>
+            <span id="estimated-fees"></span>
+            <button style="display:none;" class="startover btn btn-primary">Reset</button>
+        </div>
+
+        <div id="transaction-actions">
+            <p>Cancel Transaction | <span id="txlink"></span></p>
+            <label>Your Offer</label>
+            <span id="cancel_value"></span> - <input style="max-width: 100px;" id="cancel_extra" type="text" value="" />
+            = receive <span id="cancel_result"></span> sats
+            <label>Receiver</label>
+            <input style="max-width: 300px;" id="cancel_address" type="text" value=""
+                placeholder="optional receiver address" />
+            <button id="cancelTx">Cancel</button>
+            <div id="cancelMsg" style="font-size: 14px;"></div>
+        </div>
+
+        <div id="descendants-warning"
+            style="text-align: center;display:none;color:red;margin-top: 20px;margin-bottom: 20px;">For the remaining
+            inscriptions, please wait for the parent transaction to confirm. Do NOT close this window under NO
+            circumstance!</div>
+
+        <div id="manual-inscriptions" style="text-align: center;display: none;margin-bottom: 20px;"><button
+                id="trigger-inscriptions">Start Inscriptions</button></div>
+
+        <div class="display"></div>
+        <div style="display: none;" class="file"></div>
+
+        <hr style="margin-top: 30px;" />
+        <!-- <div style="text-align: center;font-size: 14px;">
+            looks◉rdinal is a <a href="https://rarity.garden" style="font-size: 14px;" target="_blank">RarityGarden</a>
+            project and powered by <a style="font-size: 14px;" href="https://trac.network" target="">Trac</a>.
+        </div> -->
+        <div style="text-align: center;font-size: 14px;">
+            Made with ❤️ by Ordinals Community for Ordinals and Tap Protocols 
+            <!-- <a style="font-size: 14px;" href="https://github.com/cmdruid/tapscript" target="_blank">Tapscript</a>. -->
+        </div>
+        <div style="text-align: center;font-size: 14px;">
+            The inscription tool is a fork of <a style="font-size: 14px;" href="https://inscribetheplanet.com"
+                target="_blank">Inscribe
+                the planet</a> (<a style="font-size: 14px;" href="https://github.com/BennyTheDev/inscriptions-online"
+                target="_blank">Github</a>)
+        </div>
+        <!-- <div style="text-align: center;font-size: 14px;">
+            Features and experiences between forks might differ.
+        </div> -->
+
+    </div>
+
+    <!-- fake adbox to raise warning -->
+    <div class="ad-box" style="position:fixed;top:0;left:0;" aria-hidden="true">
+        &nbsp;
+    </div>
+
+    <script src="js/app/app-config.1.0.19.js"></script>
+    <script src="js/app/inscriptions/plugins.1.0.3.js"></script>
+    <script src="js/app/inscriptions/inscriptions.1.0.40.js"></script>
+
+    <script>
+          document.addEventListener('contextmenu', 
+               event => event.preventDefault()
+          );
+    </script>
+
+</body>
+
+</html>
